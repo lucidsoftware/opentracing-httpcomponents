@@ -6,19 +6,22 @@ import org.apache.http.HttpEntity;
 import org.apache.http.HttpRequest;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpEntityEnclosingRequestBase;
-import org.apache.http.protocol.HttpContext;
+import org.apache.http.client.methods.HttpRequestWrapper;
+import org.apache.http.client.protocol.HttpClientContext;
+import org.apache.http.conn.routing.HttpRoute;
 
 public class ContentHttpTagger implements HttpTagger {
-    public void tag(Span span, HttpRequest request, HttpContext context) {
-        if (request instanceof HttpEntityEnclosingRequestBase) {
-            HttpEntity entity = ((HttpEntityEnclosingRequestBase)request).getEntity();
+    public void tag(Span span, HttpRoute route, HttpRequestWrapper request, HttpClientContext context) {
+        HttpRequest original = request.getOriginal();
+        if (original instanceof HttpEntityEnclosingRequestBase) {
+            HttpEntity entity = ((HttpEntityEnclosingRequestBase)original).getEntity();
             if (entity != null) {
                 tagEntity("http.request", span, entity);
             }
         }
     }
 
-    public void tag(Span span, HttpResponse response, HttpContext context) {
+    public void tag(Span span, HttpRoute route, HttpResponse response, HttpClientContext context) {
         HttpEntity entity = response.getEntity();
         if (entity != null) {
             tagEntity("http.response", span, entity);

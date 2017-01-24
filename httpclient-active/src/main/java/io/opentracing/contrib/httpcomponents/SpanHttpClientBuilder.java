@@ -28,6 +28,7 @@ public class SpanHttpClientBuilder extends HttpClientBuilder {
 
     public SpanHttpClientBuilder setTracer(Tracer tracer) {
         this.tracer = tracer;
+        return this;
     }
 
     protected ClientExecChain decorateMainExec(ClientExecChain exec) {
