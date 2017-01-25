@@ -15,13 +15,13 @@ import org.apache.http.client.protocol.HttpClientContext;
 import org.apache.http.conn.routing.HttpRoute;
 import org.apache.http.impl.execchain.ClientExecChain;
 
-public class SpanManagerExec implements ClientExecChain {
+public class SpanExec implements ClientExecChain {
     private final ClientExecChain exec;
     private final SpanManager spanManager;
     private final HttpTagger[] taggers;
     private final Tracer tracer;
 
-    public SpanManagerExec(ClientExecChain exec, Tracer tracer, SpanManager spanManager, HttpTagger[]taggers) {
+    public SpanExec(ClientExecChain exec, Tracer tracer, SpanManager spanManager, HttpTagger[]taggers) {
         if (exec == null || taggers == null) {
             throw new IllegalArgumentException();
         }

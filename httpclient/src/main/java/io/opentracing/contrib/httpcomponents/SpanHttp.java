@@ -4,7 +4,7 @@ import io.opentracing.contrib.global.GlobalTracer;
 import io.opentracing.contrib.spanmanager.DefaultSpanManager;
 import org.apache.http.impl.client.HttpClientBuilder;
 
-class SpanHttp {
+public final class SpanHttp {
 
     private SpanHttp() {
     }

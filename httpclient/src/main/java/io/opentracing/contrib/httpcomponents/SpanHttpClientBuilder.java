@@ -35,7 +35,7 @@ public class SpanHttpClientBuilder extends HttpClientBuilder {
         Tracer tracer = this.tracer != null ? this.tracer : GlobalTracer.get();
         SpanManager spanManager = this.spanManager != null ? this.spanManager : DefaultSpanManager.getInstance();
         HttpTagger[] taggers = this.taggers != null ? this.taggers : new HttpTagger[] {};
-        return new SpanManagerExec(exec, tracer, spanManager, taggers);
+        return new SpanExec(exec, tracer, spanManager, taggers);
     }
 
 }

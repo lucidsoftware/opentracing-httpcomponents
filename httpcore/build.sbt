@@ -1,4 +1,4 @@
 libraryDependencies ++= Seq(
   "io.opentracing" % "opentracing-api" % "0.20.7",
-  "org.apache.httpcomponents" % "httpclient" % "4.5.2"
+  "org.apache.httpcomponents" % "httpcore" % "4.4.5"
 )

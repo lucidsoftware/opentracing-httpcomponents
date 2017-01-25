@@ -2,11 +2,15 @@
 
 [![Build Status](https://travis-ci.org/lucidsoftware/opentracing-httpcomponents.svg?branch=master)](https://travis-ci.org/lucidsoftware/opentracing-playframework)
 
+This library works with [`GlobalTracer`](https://github.com/opentracing-contrib/java-globaltracer) and
+[`DefaultSpanManager`](https://github.com/opentracing-contrib/java-spanmanager).
+
 ## Install
 
 Add these dependencies as appropriate:
 
-* `com.lucidchart:opentracing-httpclient-active:1.0`
+* `com.lucidchart:opentracing-httpclient:<version>`
+* `com.lucidchart:opentracing-httpasyncclient:<version>`
 
 ## Propogating spans in requests
 
@@ -19,6 +23,17 @@ import io.opentracing.contrib.httpcomponents.*;
 HttpClientBuilder builder = HttpClients.custom();
 SpanHttp.addPropogation(builder);
 CloseableHttpClient client = builder.build();
+```
+
+For the async client,
+
+```java
+import org.apache.http.impl.nio.client.*;
+import io.opentracing.contrib.httpcomponents.*;
+
+HttpAsyncClientBuilder builder = HttpAsyncClients.custom();
+SpanHttpAsync.addPropogation(builder);
+CloseableHttpAsyncClient client = builder.build();
 ```
 
 ## Creating spans for requests
@@ -51,9 +66,9 @@ new MyHttpClientBuilder {
 
 ### Taggers
 
-Tags for the created `Span` are added by `io.opentracing.contrib.httpcomponents.HttpTagger`.
+Tags for client `Span`s come from `io.opentracing.contrib.httpcomponents.HttpTagger` instances.
 
-Built-in taggers
+Built-in taggers:
 
-* `StandardHttpTaggers`
+* `StandardHttpTagger`
 * `ContentHttpTagger`
