@@ -5,4 +5,4 @@ libraryDependencies ++= Seq(
   "org.apache.httpcomponents" % "httpclient" % "4.5.2"
 )
 
-moduleName := s"opentracing-$name"
+moduleName := s"opentracing-${name.value}"
