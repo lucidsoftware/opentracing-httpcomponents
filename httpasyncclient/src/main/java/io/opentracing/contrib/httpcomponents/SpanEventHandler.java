@@ -15,9 +15,9 @@ import org.apache.http.nio.protocol.HttpAsyncRequestExecutor;
 import org.apache.http.protocol.HttpContext;
 
 /**
- * @note We have to employ reflection to grab the flow id from the [[HttpClientContext]]. There might be a better way;
- *   perhaps mucking with the IOReactors. That's more direct and closer to what we do for thread pools and Akka
- *   systems, but that's also more invasive and probably harder.
+ * We have to employ reflection to grab the flow id from the [[HttpClientContext]]. There might be a better way; perhaps
+ * mucking with the IOReactors. That's more direct like is done for thread pools but that's also more invasive and
+ * probably harder.
  */
 public class SpanEventHandler implements NHttpClientEventHandler {
     private Field contextField;
