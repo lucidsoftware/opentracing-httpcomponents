@@ -22,7 +22,10 @@ public class SpanHttpClientBuilder extends HttpClientBuilder {
         return this;
     }
 
-    public SpanHttpClientBuilder name(SpanManager )
+    public SpanHttpClientBuilder setName(String name) {
+        this.name = name;
+        return this;
+    }
 
     public SpanHttpClientBuilder setSpanManager(SpanManager spanManager) {
         this.spanManager = spanManager;

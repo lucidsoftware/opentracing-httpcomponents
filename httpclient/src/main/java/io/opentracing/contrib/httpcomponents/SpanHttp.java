@@ -14,7 +14,7 @@ public final class SpanHttp {
     }
 
     public static HttpClientBuilder createSpans(String name) {
-        return new SpanHttpClientBuilder().withName(name);
+        return new SpanHttpClientBuilder().setName(name);
     }
 
 }
