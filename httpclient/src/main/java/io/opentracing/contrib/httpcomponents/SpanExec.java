@@ -4,6 +4,7 @@ import io.opentracing.Span;
 import io.opentracing.Tracer;
 import io.opentracing.contrib.spanmanager.DefaultSpanManager;
 import io.opentracing.contrib.spanmanager.SpanManager;
+import io.opentracing.propagation.Format;
 import io.opentracing.tag.Tags;
 import java.io.Closeable;
 import java.io.IOException;
@@ -27,7 +28,7 @@ public class SpanExec implements ClientExecChain {
         }
         this.exec = exec;
         this.spanManager = spanManager;
-        this.taggers = new HttpTagger[] { new StandardHttpTagger() };
+        this.taggers = taggers;
         this.tracer = tracer;
     }
 
@@ -35,6 +36,7 @@ public class SpanExec implements ClientExecChain {
         Span span = tracer.buildSpan("HTTP " + request.getRequestLine().getMethod())
                 .asChildOf(DefaultSpanManager.getInstance().currentSpan())
                 .start();
+        this.tracer.inject(span.context(), Format.Builtin.HTTP_HEADERS, new HttpRequestTextMap(request));
 
         try (Closeable managedSpan = spanManager.manage(span)) {
             for (HttpTagger tagger : taggers) {

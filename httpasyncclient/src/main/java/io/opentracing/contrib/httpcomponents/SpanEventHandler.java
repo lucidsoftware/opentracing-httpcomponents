@@ -66,8 +66,10 @@ public class SpanEventHandler implements NHttpClientEventHandler {
             } catch (IllegalAccessException e) {
                 throw new RuntimeException(e);
             }
-            Span id = (Span) connectionContext.removeAttribute(attributeKey);
-            if (id != null) {
+            span = (Span)requestContext.getAttribute(attributeKey);
+            if (span == null) {
+                span = (Span)connectionContext.removeAttribute(attributeKey);
+            } else {
                 connectionContext.setAttribute(attributeKey, span);
             }
         }

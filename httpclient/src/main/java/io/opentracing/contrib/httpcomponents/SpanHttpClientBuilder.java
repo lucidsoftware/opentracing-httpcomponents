@@ -12,6 +12,7 @@ public class SpanHttpClientBuilder extends HttpClientBuilder {
     private HttpTagger[] taggers;
     private Tracer tracer;
     private SpanManager spanManager;
+    private String name;
 
     public SpanHttpClientBuilder setTaggers(HttpTagger[] taggers) {
         if (taggers != null) {
@@ -20,6 +21,8 @@ public class SpanHttpClientBuilder extends HttpClientBuilder {
         this.taggers = taggers;
         return this;
     }
+
+    public SpanHttpClientBuilder name(SpanManager )
 
     public SpanHttpClientBuilder setSpanManager(SpanManager spanManager) {
         this.spanManager = spanManager;

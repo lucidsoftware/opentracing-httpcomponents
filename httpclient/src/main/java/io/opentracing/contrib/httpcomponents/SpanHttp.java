@@ -13,4 +13,8 @@ public final class SpanHttp {
         return clientBuilder.addInterceptorLast(new SpanHttpRequestInterceptor(GlobalTracer.get(), DefaultSpanManager.getInstance()));
     }
 
+    public static HttpClientBuilder createSpans(String name) {
+        return new SpanHttpClientBuilder().withName(name);
+    }
+
 }
