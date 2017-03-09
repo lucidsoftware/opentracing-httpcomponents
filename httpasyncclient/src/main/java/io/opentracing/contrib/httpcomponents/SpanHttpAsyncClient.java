@@ -3,9 +3,8 @@ package io.opentracing.contrib.httpcomponents;
 import io.opentracing.References;
 import io.opentracing.Span;
 import io.opentracing.Tracer;
-import io.opentracing.contrib.spanmanager.SpanManager;
-import io.opentracing.contrib.spanmanager.SpanManager.ManagedSpan;
 import io.opentracing.tag.Tags;
+import io.opentracing.threadcontext.ContextSpan;
 import java.io.IOException;
 import java.util.concurrent.Future;
 import org.apache.http.concurrent.FutureCallback;
@@ -17,13 +16,13 @@ import org.apache.http.protocol.HttpContext;
 public class SpanHttpAsyncClient extends CloseableHttpAsyncClient {
 
     private final CloseableHttpAsyncClient client;
-    private final SpanManager spanManager;
     private final Tracer tracer;
+    private final ContextSpan contextSpan;
 
-    public SpanHttpAsyncClient(CloseableHttpAsyncClient client, SpanManager spanManager, Tracer tracer) {
+    public SpanHttpAsyncClient(CloseableHttpAsyncClient client, Tracer tracer, ContextSpan contextSpan) {
         this.client = client;
-        this.spanManager = spanManager;
         this.tracer = tracer;
+        this.contextSpan = contextSpan;
     }
 
     public boolean isRunning() {
@@ -39,15 +38,10 @@ public class SpanHttpAsyncClient extends CloseableHttpAsyncClient {
     }
 
     public <T> Future<T> execute(HttpAsyncRequestProducer producer, HttpAsyncResponseConsumer<T> responseConsumer, HttpContext context, FutureCallback<T> callback) {
-        Span span = tracer.buildSpan("HTTP").addReference(References.CHILD_OF, spanManager.currentSpan().context()).start();
-        Tags.SPAN_KIND.set(span, Tags.SPAN_KIND_CLIENT);
-        try(ManagedSpan managedSpan = spanManager.manage(span)) {
-            return client.execute(
-                new SpanHttpAsyncRequestProducer(producer, spanManager),
-                new SpanHttpAsyncResponseConsumer<>(responseConsumer, spanManager),
-                context,
-                new SpanFutureCallback<>(callback, spanManager)
-            );
-        }
+        Span span = tracer.buildSpan("HTTP").addReference(References.CHILD_OF, contextSpan.get().context())
+            .withTag(Tags.SPAN_KIND.getKey(), Tags.SPAN_KIND_CLIENT)
+            .start();
+        return contextSpan.set(span).supply(() -> client.execute(producer, responseConsumer, context, callback));
     }
+
 }

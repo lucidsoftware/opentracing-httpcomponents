@@ -2,7 +2,9 @@ lazy val httpcore = project
 
 lazy val httpclient = project.dependsOn(httpcore)
 
-lazy val httpasyncclient = project.dependsOn(httpclient)
+lazy val httpasyncclient = project.dependsOn(httpclient, `httpasyncclient-thread-context`)
+
+lazy val `httpasyncclient-thread-context` = project
 
 inScope(Global)(Seq(
   autoScalaLibrary := false,
@@ -10,8 +12,8 @@ inScope(Global)(Seq(
     "Sonatype Nexus Repository Manager",
     "oss.sonatype.org",
     sys.env.getOrElse("SONATYPE_USERNAME", ""),
-    sys.env.getOrElse("SONATYPE_PASSWORD", ""
-  )),
+    sys.env.getOrElse("SONATYPE_PASSWORD", "")
+  ),
   crossPaths := false,
   developers += Developer("pauldraper", "Paul Draper", "paulddraper@gmail.com", url("https://github.com/pauldraper")),
   homepage := Some(url("https://git.lucidchart.com/lucidsoftware/opentracing-httpcomponents")),

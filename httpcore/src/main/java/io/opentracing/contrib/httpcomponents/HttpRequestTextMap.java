@@ -9,6 +9,7 @@ import org.apache.http.HeaderIterator;
 import org.apache.http.HttpRequest;
 
 public class HttpRequestTextMap implements TextMap {
+
     private final HttpRequest request;
 
     public HttpRequestTextMap(HttpRequest request) {
@@ -32,4 +33,5 @@ public class HttpRequestTextMap implements TextMap {
     public void put(String key, String value) {
         request.setHeader(key, value);
     }
+
 }

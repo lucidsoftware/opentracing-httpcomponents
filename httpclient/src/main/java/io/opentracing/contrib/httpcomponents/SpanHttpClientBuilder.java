@@ -2,8 +2,7 @@ package io.opentracing.contrib.httpcomponents;
 
 import io.opentracing.Tracer;
 import io.opentracing.contrib.global.GlobalTracer;
-import io.opentracing.contrib.spanmanager.DefaultSpanManager;
-import io.opentracing.contrib.spanmanager.SpanManager;
+import io.opentracing.threadcontext.ContextSpan;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.execchain.ClientExecChain;
 
@@ -11,7 +10,7 @@ public class SpanHttpClientBuilder extends HttpClientBuilder {
 
     private HttpTagger[] taggers;
     private Tracer tracer;
-    private SpanManager spanManager;
+    private ContextSpan contextSpan;
     private String name;
 
     public SpanHttpClientBuilder setTaggers(HttpTagger[] taggers) {
@@ -22,13 +21,8 @@ public class SpanHttpClientBuilder extends HttpClientBuilder {
         return this;
     }
 
-    public SpanHttpClientBuilder setName(String name) {
-        this.name = name;
-        return this;
-    }
-
-    public SpanHttpClientBuilder setSpanManager(SpanManager spanManager) {
-        this.spanManager = spanManager;
+    public SpanHttpClientBuilder setSpanManager(ContextSpan contextSpan) {
+        this.contextSpan = contextSpan;
         return this;
     }
 
@@ -39,9 +33,9 @@ public class SpanHttpClientBuilder extends HttpClientBuilder {
 
     protected ClientExecChain decorateMainExec(ClientExecChain exec) {
         Tracer tracer = this.tracer != null ? this.tracer : GlobalTracer.get();
-        SpanManager spanManager = this.spanManager != null ? this.spanManager : DefaultSpanManager.getInstance();
+        ContextSpan contextSpan = this.contextSpan != null ? this.contextSpan : ContextSpan.DEFAULT;
         HttpTagger[] taggers = this.taggers != null ? this.taggers : new HttpTagger[] {};
-        return new SpanExec(exec, tracer, spanManager, taggers);
+        return new SpanExec(exec, tracer, contextSpan, taggers);
     }
 
 }
