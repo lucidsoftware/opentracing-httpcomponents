@@ -8,7 +8,7 @@ import org.apache.http.impl.execchain.ClientExecChain;
 
 public class SpanHttpClientBuilder extends HttpClientBuilder {
 
-    private HttpTagger[] taggers;
+    private HttpTagger[] taggers = new HttpTagger[] { new StandardHttpTagger(), new ContentHttpTagger() };
     private Tracer tracer;
     private ContextSpan contextSpan;
     private String name;

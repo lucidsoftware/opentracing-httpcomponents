@@ -29,8 +29,9 @@ public class SpanExec implements ClientExecChain {
     }
 
     public CloseableHttpResponse execute(HttpRoute route, HttpRequestWrapper request, HttpClientContext context, HttpExecutionAware execAware) throws IOException, HttpException {
-        Tracer.SpanBuilder spanBuilder = tracer.buildSpan("HTTP " + request.getRequestLine().getMethod())
-                .asChildOf(contextSpan.get());
+        Tracer.SpanBuilder spanBuilder = tracer.buildSpan("")
+                .asChildOf(contextSpan.get())
+                .withTag(Tags.SPAN_KIND.getKey(), Tags.SPAN_KIND_CLIENT);
         try(Span span = spanBuilder.start()) {
             this.tracer.inject(span.context(), Format.Builtin.HTTP_HEADERS, new HttpRequestTextMap(request));
             return contextSpan.set(span).<CloseableHttpResponse, HttpException, IOException>supplyException2(() -> {

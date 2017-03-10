@@ -46,7 +46,6 @@ public class StandardHttpTagger implements HttpTagger {
     }
 
     public void tag(Span span, HttpRoute route, HttpRequestWrapper request, HttpClientContext context) {
-        Tags.SPAN_KIND.set(span, Tags.SPAN_KIND_CLIENT);
         tagRequest(span, request);
         tagPeer(span, route.getTargetHost());
     }
