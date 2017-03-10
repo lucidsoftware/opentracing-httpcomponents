@@ -22,7 +22,7 @@ public class ContextFutureCallback<T> implements FutureCallback<T> {
     }
 
     public void cancelled() {
-        context.run(() -> delegate.cancelled());
+        context.run(delegate::cancelled);
     }
 
 }

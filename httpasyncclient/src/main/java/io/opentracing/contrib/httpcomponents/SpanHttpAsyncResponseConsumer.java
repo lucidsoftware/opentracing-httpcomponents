@@ -22,6 +22,7 @@ public class SpanHttpAsyncResponseConsumer<T> implements HttpAsyncResponseConsum
 
     public void responseReceived(HttpResponse response) throws IOException, HttpException {
         StandardHttpTagger.tagResponse(span, response);
+        delegate.responseReceived(response);
     }
 
     public void consumeContent(ContentDecoder decoder, IOControl ioctrl) throws IOException {
@@ -55,7 +56,7 @@ public class SpanHttpAsyncResponseConsumer<T> implements HttpAsyncResponseConsum
     }
 
     public boolean cancel() {
-        span.log("cancel");
+        span.log("response cancel");
         return delegate.cancel();
     }
 

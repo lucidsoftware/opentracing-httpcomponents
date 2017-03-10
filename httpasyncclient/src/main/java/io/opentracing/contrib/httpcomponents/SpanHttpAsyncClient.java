@@ -41,7 +41,12 @@ public class SpanHttpAsyncClient extends CloseableHttpAsyncClient {
         Span span = tracer.buildSpan("HTTP").addReference(References.CHILD_OF, contextSpan.get().context())
             .withTag(Tags.SPAN_KIND.getKey(), Tags.SPAN_KIND_CLIENT)
             .start();
-        return contextSpan.set(span).supply(() -> client.execute(producer, responseConsumer, context, callback));
+        return contextSpan.set(span).supply(() -> client.execute(
+            new SpanHttpAsyncRequestProducer(producer, span),
+            new SpanHttpAsyncResponseConsumer<>(responseConsumer, span),
+            context,
+            new SpanFutureCallback<>(callback, span)
+        ));
     }
 
 }

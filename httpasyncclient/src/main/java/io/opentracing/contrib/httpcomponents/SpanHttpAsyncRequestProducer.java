@@ -38,7 +38,7 @@ public class SpanHttpAsyncRequestProducer implements HttpAsyncRequestProducer {
     }
 
     public void requestCompleted(HttpContext context) {
-        span.log("requestCompleted");
+        span.log("request complete");
         delegate.requestCompleted(context);
     }
 

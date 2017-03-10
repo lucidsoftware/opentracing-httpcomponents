@@ -29,27 +29,28 @@ public class SpanExec implements ClientExecChain {
     }
 
     public CloseableHttpResponse execute(HttpRoute route, HttpRequestWrapper request, HttpClientContext context, HttpExecutionAware execAware) throws IOException, HttpException {
-        Span span = tracer.buildSpan("HTTP " + request.getRequestLine().getMethod())
-                .asChildOf(contextSpan.get())
-                .start();
-        this.tracer.inject(span.context(), Format.Builtin.HTTP_HEADERS, new HttpRequestTextMap(request));
-
-        return contextSpan.set(span).<CloseableHttpResponse, HttpException, IOException>supplyException2(() -> {
-            for (HttpTagger tagger : taggers) {
-                tagger.tag(span, route, request, context);
-            }
-            CloseableHttpResponse response;
-            try {
-                response = exec.execute(route, request, context, execAware);
-            } catch (HttpException | IOException e) {
-                Tags.ERROR.set(span, true);
-                throw e;
-            }
-            for (HttpTagger tagger : taggers) {
-                tagger.tag(span, route, response, context);
-            }
-            return response;
-        });
+        Tracer.SpanBuilder spanBuilder = tracer.buildSpan("HTTP " + request.getRequestLine().getMethod())
+                .asChildOf(contextSpan.get());
+        try(Span span = spanBuilder.start()) {
+            this.tracer.inject(span.context(), Format.Builtin.HTTP_HEADERS, new HttpRequestTextMap(request));
+            return contextSpan.set(span).<CloseableHttpResponse, HttpException, IOException>supplyException2(() -> {
+                for (HttpTagger tagger : taggers) {
+                    tagger.tag(span, route, request, context);
+                }
+                CloseableHttpResponse response;
+                try {
+                    response = exec.execute(route, request, context, execAware);
+                } catch (HttpException | IOException e) {
+                    Tags.ERROR.set(span, true);
+                    throw e;
+                }
+                for (HttpTagger tagger : taggers) {
+                    tagger.tag(span, route, response, context);
+                }
+                span.finish();
+                return response;
+            });
+        }
     }
 
 }
