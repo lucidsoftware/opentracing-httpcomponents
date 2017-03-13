@@ -1,13 +1,20 @@
 package io.opentracing.contrib.httpcomponents;
 
-import io.opentracing.Span;
+import org.apache.http.HttpHost;
+import org.apache.http.HttpRequest;
 import org.apache.http.HttpResponse;
-import org.apache.http.client.methods.HttpRequestWrapper;
-import org.apache.http.client.protocol.HttpClientContext;
-import org.apache.http.conn.routing.HttpRoute;
+import org.apache.http.protocol.HttpContext;
 
-interface HttpTagger {
-    void tag(Span span, HttpRoute route, HttpRequestWrapper request, HttpClientContext context);
+public interface HttpTagger {
+    default void tagTarget(HttpHost route) {
+    }
 
-    void tag(Span span, HttpRoute route, HttpResponse response, HttpClientContext context);
+    default void tagRequest(HttpRequest request) {
+    }
+
+    default void tagResponse(HttpResponse response) {
+    }
+
+    default void tagContext() {
+    }
 }

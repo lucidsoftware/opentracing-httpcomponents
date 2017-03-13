@@ -8,7 +8,9 @@ public final class SpanHttp {
     }
 
     public static HttpClientBuilder trace() {
-        return new SpanHttpClientBuilder();
+        return new SpanHttpClientBuilder()
+            .addTaggerFactory(StandardHttpTagger.FACTORY)
+            .addTaggerFactory(ContentHttpTagger.FACTORY);
     }
 
 }

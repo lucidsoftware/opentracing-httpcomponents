@@ -14,14 +14,16 @@ public class SpanHttpAsyncResponseConsumer<T> implements HttpAsyncResponseConsum
 
     private final HttpAsyncResponseConsumer<T> delegate;
     private final Span span;
+    private final HttpTagger tagger;
 
-    public SpanHttpAsyncResponseConsumer(HttpAsyncResponseConsumer<T> delegate, Span span) {
+    public SpanHttpAsyncResponseConsumer(HttpAsyncResponseConsumer<T> delegate, Span span, HttpTagger tagger) {
         this.delegate = delegate;
         this.span = span;
+        this.tagger = tagger;
     }
 
     public void responseReceived(HttpResponse response) throws IOException, HttpException {
-        StandardHttpTagger.tagResponse(span, response);
+        tagger.tagResponse(response);
         delegate.responseReceived(response);
     }
 
@@ -30,7 +32,6 @@ public class SpanHttpAsyncResponseConsumer<T> implements HttpAsyncResponseConsum
     }
 
     public void responseCompleted(HttpContext context) {
-        span.log("responseCompleted");
         delegate.responseCompleted(context);
     }
 

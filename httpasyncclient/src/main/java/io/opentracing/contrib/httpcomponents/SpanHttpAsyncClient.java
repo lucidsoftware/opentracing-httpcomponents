@@ -18,11 +18,13 @@ public class SpanHttpAsyncClient extends CloseableHttpAsyncClient {
     private final CloseableHttpAsyncClient client;
     private final Tracer tracer;
     private final ContextSpan contextSpan;
+    private final HttpTaggerFactory taggerFactory;
 
-    public SpanHttpAsyncClient(CloseableHttpAsyncClient client, Tracer tracer, ContextSpan contextSpan) {
+    public SpanHttpAsyncClient(final CloseableHttpAsyncClient client, final Tracer tracer, final ContextSpan contextSpan, final HttpTaggerFactory taggerFactory) {
         this.client = client;
         this.tracer = tracer;
         this.contextSpan = contextSpan;
+        this.taggerFactory = taggerFactory;
     }
 
     public boolean isRunning() {
@@ -41,11 +43,12 @@ public class SpanHttpAsyncClient extends CloseableHttpAsyncClient {
         Span span = tracer.buildSpan("HTTP").addReference(References.CHILD_OF, contextSpan.get().context())
             .withTag(Tags.SPAN_KIND.getKey(), Tags.SPAN_KIND_CLIENT)
             .start();
+        HttpTagger tagger = taggerFactory.create(span, context);
         return contextSpan.set(span).supply(() -> client.execute(
-            new SpanHttpAsyncRequestProducer(producer, span),
-            new SpanHttpAsyncResponseConsumer<>(responseConsumer, span),
+            new SpanHttpAsyncRequestProducer(producer, tracer, span, tagger),
+            new SpanHttpAsyncResponseConsumer<>(responseConsumer, span, tagger),
             context,
-            new SpanFutureCallback<>(callback, span)
+            new SpanFutureCallback<>(callback, span, tagger)
         ));
     }
 

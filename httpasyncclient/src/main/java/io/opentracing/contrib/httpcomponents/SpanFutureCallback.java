@@ -8,27 +8,37 @@ public class SpanFutureCallback<T> implements FutureCallback<T> {
 
     private final FutureCallback<T> delegate;
     private final Span span;
+    private final HttpTagger tagger;
 
-    public SpanFutureCallback(FutureCallback<T> delegate, Span span) {
+    public SpanFutureCallback(final FutureCallback<T> delegate, final Span span, final HttpTagger tagger) {
         this.delegate = delegate;
         this.span = span;
+        this.tagger = tagger;
     }
 
     public void completed(T result) {
+        tagger.tagContext();
         span.finish();
-        delegate.completed(result);
+        if (delegate != null) {
+            delegate.completed(result);
+        }
     }
 
     public void failed(Exception ex) {
-        span.finish();
         Tags.ERROR.set(span, true);
-        delegate.failed(ex);
+        span.finish();
+        if (delegate != null) {
+            delegate.failed(ex);
+        }
     }
 
     public void cancelled() {
-        span.finish();
         Tags.ERROR.set(span, true);
         span.log("client cancel");
+        span.finish();
+        if (delegate != null) {
+            delegate.cancelled();
+        }
     }
 
 }

@@ -9,16 +9,21 @@ import java.nio.ByteBuffer;
 import org.apache.http.HttpHost;
 import org.apache.http.HttpRequest;
 import org.apache.http.HttpResponse;
-import org.apache.http.client.methods.HttpRequestWrapper;
-import org.apache.http.client.protocol.HttpClientContext;
-import org.apache.http.conn.routing.HttpRoute;
 
 /**
  * Adds the standard OpenTracing tags defined in {@link Tags}.
  */
 public class StandardHttpTagger implements HttpTagger {
 
-    public static void tagPeer(Span span, HttpHost peer) {
+    public static HttpTaggerFactory FACTORY = (span, httpContext) -> new StandardHttpTagger(span);
+
+    private final Span span;
+
+    public StandardHttpTagger(Span span) {
+        this.span = span;
+    }
+
+    public void tagTarget(HttpHost peer) {
         InetAddress address = peer.getAddress();
         if (address instanceof Inet4Address) {
             Tags.PEER_HOST_IPV4.set(span, ByteBuffer.wrap(address.getAddress()).getInt());
@@ -36,22 +41,13 @@ public class StandardHttpTagger implements HttpTagger {
         }
     }
 
-    public static void tagRequest(Span span, HttpRequest request) {
+    public void tagRequest(HttpRequest request) {
         Tags.HTTP_METHOD.set(span, request.getRequestLine().getMethod());
         Tags.HTTP_URL.set(span, request.getRequestLine().getUri());
     }
 
-    public static void tagResponse(Span span, HttpResponse response) {
+    public void tagResponse(HttpResponse response) {
         Tags.HTTP_STATUS.set(span, response.getStatusLine().getStatusCode());
-    }
-
-    public void tag(Span span, HttpRoute route, HttpRequestWrapper request, HttpClientContext context) {
-        tagRequest(span, request);
-        tagPeer(span, route.getTargetHost());
-    }
-
-    public void tag(Span span, HttpRoute route, HttpResponse response, HttpClientContext context) {
-        tagResponse(span, response);
     }
 
 }

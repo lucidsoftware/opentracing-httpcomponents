@@ -6,50 +6,24 @@
 This library works with [`GlobalTracer`](https://github.com/opentracing-contrib/java-globaltracer) and
 [`DefaultSpanManager`](https://github.com/opentracing-contrib/java-spanmanager).
 
-## Install
+## HttpClient
 
-Add these dependencies as appropriate:
-
-* `com.lucidchart:opentracing-httpclient:<version>`
-* `com.lucidchart:opentracing-httpasyncclient:<version>`
-
-## Propogating spans in requests
-
-To propogate spans across the HTTP request, call `SpanHttp.addPropogation` on the `HttpClientBuilder`.
+Install `com.lucidchart:opentracing-httpclient:<version>`
 
 ```java
-import org.apache.http.impl.*;
-import io.opentracing.contrib.httpcomponents.*;
+import org.apache.http.impl.client.CloseableHttpClient;
+import io.opentracing.contrib.httpcomponents.SpanHttp;
+import io.opentracing.threadcontext.ContextSpan;
+import io.opentracing.Span;
 
-HttpClientBuilder builder = HttpClients.custom();
-SpanHttp.addPropogation(builder);
-CloseableHttpClient client = builder.build();
-```
-
-For the async client,
-
-```java
-import org.apache.http.impl.nio.client.*;
-import io.opentracing.contrib.httpcomponents.*;
-
-HttpAsyncClientBuilder builder = HttpAsyncClients.custom();
-SpanHttpAsync.addPropogation(builder);
-CloseableHttpAsyncClient client = builder.build();
-```
-
-## Creating spans for requests
-
-To create a new span for each request, replaces uses of `HttpClients` or `HttpClientBuilder` with `SpanHttpClientBuilder`.
-
-```java
-import io.opentracing.contrib.httpcomponents.*;
-
-new SpanHttpClientBuilder()
-    .setTracer(...)       // defaults to GlobalTracer.get()
-    .setSpanManager(...)  // defaults to DefaultSpanManager.get()
-    .setTaggers(...)      // defaults to new HttpTagger[] { new StandardHttpTagger(); }
-    ...                   // additional client configuration
-    .build();
+Span span = ...
+CloseableHttpClient client = SpanHttp.trace().build();
+ContextSpan.set(span).supplyException2(() -> {
+  try {
+    client.execute(new HttpGet("http://example.org/"))
+  } catch (IOException | ClientProtocolException e) {
+  }
+})
 ```
 
 If you are already using a custom subclass of `HttpClientBuilder`, override the `decorateMainExec` of the class.
@@ -63,6 +37,27 @@ new MyHttpClientBuilder {
         new DefaultSpanManagerExec(super.decorateMainExec(exec), new HttpTagger[] { new StandardHttpTagger(); }
     }
 }
+```
+
+## HttpAsyncClient
+
+Install `com.lucidchart:opentracing-httpasyncclient:<version>`.
+
+```java
+import org.apache.http.impl.nio.client.CloseableHttpAsyncClient;
+import org.apache.http.impl.nio.client.HttpAsyncClients;
+import io.opentracing.contrib.httpcomponents.SpanHttpAsync;
+import io.opentracing.threadcontext.ContentSpan;
+import io.opentracing.Span;
+
+Span span = ...
+CloseableHttpAyncClient client = SpanHttpAsync.trace(HttpAsyncClients.createDefault());
+ContextSpan.set(span).supplyException2(() -> {
+  try {
+    client.execute(new HttpGet("http://example.org/"), null)
+  } catch (IOException | ClientProtocolException e) {
+  }
+})
 ```
 
 ### Taggers
