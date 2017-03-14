@@ -30,16 +30,27 @@ public class CombinedHttpTagger implements HttpTagger {
 
 
     public void tagTarget(HttpHost route) {
-        for (HttpTagger tagger : taggers) {
+        for (final HttpTagger tagger : taggers) {
             tagger.tagTarget(route);
         }
     }
 
     public void tagRequest(HttpRequest request) {
-
+        for (final HttpTagger tagger : taggers) {
+            tagger.tagRequest(request);
+        }
     }
 
-    public void tagResponse(HttpResponse context) {
-
+    public void tagResponse(HttpResponse response) {
+        for (final HttpTagger tagger : taggers) {
+            tagger.tagResponse(response);
+        }
     }
+
+    public void tagContext() {
+        for (final HttpTagger tagger : taggers) {
+            tagger.tagContext();
+        }
+    }
+
 }
