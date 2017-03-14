@@ -17,7 +17,7 @@ public final class SpanHttpAsync {
             StandardHttpTagger.FACTORY,
             ContentHttpTagger.FACTORY
         ));
-        return new ContextAsyncClient(new SpanHttpAsyncClient(client, GlobalTracer.get(), ContextSpan.DEFAULT, taggerFactory), Context.DEFAULT);
+        return new SpanHttpAsyncClient(new ContextAsyncClient(client, Context.DEFAULT), GlobalTracer.get(), ContextSpan.DEFAULT, taggerFactory);
     }
 
 }
