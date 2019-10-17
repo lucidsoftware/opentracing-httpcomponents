@@ -2,7 +2,7 @@ package io.opentracing.contrib.httpcomponents;
 
 import com.github.threadcontext.Context;
 import com.github.threadcontext.httpasyncclient.ContextAsyncClient;
-import io.opentracing.contrib.global.GlobalTracer;
+import io.opentracing.util.GlobalTracer;
 import io.opentracing.threadcontext.ContextSpan;
 import java.util.Arrays;
 import org.apache.http.impl.nio.client.CloseableHttpAsyncClient;

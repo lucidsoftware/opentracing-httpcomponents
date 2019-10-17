@@ -33,11 +33,11 @@ public class StandardHttpTagger implements HttpTagger {
         Tags.PEER_HOSTNAME.set(span, peer.getHostName());
         int port = peer.getPort();
         if (port >= 0) {
-            Tags.PEER_PORT.set(span, (short)port);
+            Tags.PEER_PORT.set(span, port);
         } else if (peer.getSchemeName().equals("http")) {
-            Tags.PEER_PORT.set(span, (short)80);
+            Tags.PEER_PORT.set(span, 80);
         } else {
-            Tags.PEER_PORT.set(span, (short)443);
+            Tags.PEER_PORT.set(span, 443);
         }
     }
 

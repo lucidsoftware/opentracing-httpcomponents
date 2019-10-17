@@ -1,7 +1,7 @@
 package io.opentracing.contrib.httpcomponents;
 
 import io.opentracing.Tracer;
-import io.opentracing.contrib.global.GlobalTracer;
+import io.opentracing.util.GlobalTracer;
 import io.opentracing.threadcontext.ContextSpan;
 import java.util.ArrayList;
 import java.util.List;
