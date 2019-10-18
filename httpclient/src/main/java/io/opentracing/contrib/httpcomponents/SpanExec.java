@@ -32,25 +32,25 @@ public class SpanExec implements ClientExecChain {
         Tracer.SpanBuilder spanBuilder = tracer.buildSpan(String.format("HTTP %s", request.getMethod()))
                 .asChildOf(contextSpan.get())
                 .withTag(Tags.SPAN_KIND.getKey(), Tags.SPAN_KIND_CLIENT);
-        try(Span span = spanBuilder.start()) {
-            this.tracer.inject(span.context(), Format.Builtin.HTTP_HEADERS, new HttpRequestTextMap(request));
-            return contextSpan.set(span).<CloseableHttpResponse, HttpException, IOException>supplyException2(() -> {
-                HttpTagger tagger = taggerFactory.create(span, context);
-                tagger.tagRequest(request.getOriginal());
-                tagger.tagTarget(route.getTargetHost());
-                final CloseableHttpResponse response;
-                try {
-                    response = exec.execute(route, request, context, execAware);
-                } catch (HttpException | IOException e) {
-                    Tags.ERROR.set(span, true);
-                    throw e;
-                } finally {
-                    tagger.tagContext();
-                }
-                tagger.tagResponse(response);
-                return response;
-            });
-        }
+                
+        Span span = spanBuilder.start();
+        this.tracer.inject(span.context(), Format.Builtin.HTTP_HEADERS, new HttpRequestTextMap(request));
+        return contextSpan.set(span).<CloseableHttpResponse, HttpException, IOException>supplyException2(() -> {
+            HttpTagger tagger = taggerFactory.create(span, context);
+            tagger.tagRequest(request.getOriginal());
+            tagger.tagTarget(route.getTargetHost());
+            final CloseableHttpResponse response;
+            try {
+                response = exec.execute(route, request, context, execAware);
+            } catch (HttpException | IOException e) {
+                Tags.ERROR.set(span, true);
+                throw e;
+            } finally {
+                tagger.tagContext();
+            }
+            tagger.tagResponse(response);
+            return response;
+        });        
     }
 
 }
