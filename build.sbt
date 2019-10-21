@@ -34,4 +34,3 @@ inScope(Global)(Seq(
 ))
 
 skip in publish := true
-publishTo := sonatypePublishToBundle.value

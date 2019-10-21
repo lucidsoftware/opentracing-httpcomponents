@@ -4,7 +4,7 @@ after_success: |
     if [ -z "$TRAVIS_TAG" ]; then
         sbt publishSigned
     else
-        sbt '; publishSigned; sonatypeRelease'
+        sbt '; publishSigned; sonatypeBundleRelease'
     fi
   fi
 cache:
@@ -12,13 +12,14 @@ cache:
     - $HOME/.ivy2
     - $HOME/.sbt
 deploy:
+  provider: releases
   api_key:
-    secure: tp8RmFVQBvS8JyJnieZ/QkB36c/0D45ZJQMGpY3c6eRTcDwOEJksEy+XhnWLB2a+6hi0pQVFs4D2m/6ZZRuNVYkfhkJgL7kqpgre1lh/zJGrYuOJc4ut3CDemOEQbpgGKEkETl+Up+nPYcTRKCttB8My7hQCbX4LmOq07QjAqhPZoYabWY3wsuFxy7Dx7lBUV30OHidllByQgSbRwiKFSqmVciWLBks98QMRQKNaCLyYHRRR/y7suHFchEJajSBQyUkGrGoaJousgu+KQmDYJwF3RE/B8A1ZZvHXS3j+uUCRiouq4hvXJiQW5e3a0Th4qSfZ39UKifRY/ihQKIGRCWJUK4xCbIDfR97MMqEqZOzhGrLsqqzcvE17LjMRX673dNEwP5EUgY02IP66FVKmAchUfRFVwrshBFGRTSuO7fbDw+Hi0AmT7Vr6IMqP3A/8TWXQrET9U/sSkcOBKNUftrIwNl2na1VHZbFeUQ0mBV5ei+ySACobb6pTcZOy5nqi19+Sq3Of6fYsj2bZYsSP8tCAGxPeOm0Nu7WInc2MqP8HbLyvHp8mNGinX0p042FvCIYD2JcGfznn9FGDb12WEga2rCwJnoq6e+5ZlMvjPNkzkiLOJv7OsC+I6TEb/P3KWzYdzOSO6JVGtHPxmXBZHhFIUUa+uqj9UbbCtA5ct/4=
+    secure: mMqxC8Ue+48l7DcMafFcWBk/LJ4z4huKpE3CaO1Gv8AGkZMbbOYLulmATEUL3d0eYB1ZCzphFcUmTBQgZpvxUgPslUm9kimw1hv2KOBe+88/FZAQ540zTx2MNvaLun1PzBMQdXsVX5L4O/u2Hhs+BaqAlhb2LQscAm08yW2B+3ndZt2xTeGljB+w3Jth6ysL+j+mu73II9vIE3WTF5Oks1iU2OmyTsgQzOs7C408WbAD6j5YhnPYIPM4ulm3nbHgSA94x7Buw3/cwBGVG5+MVmt3xkLvfJ6GGDuGkB6d4y7gdR07+VU/e3hIhOiRSp/KmrE/LHyXhFzwZAHFbQYo5fLVRbs3SB0TFmn2nRvM+vqe/rRLXR+LZUatYs8CbAv1Hr3AB1mLKwgWBfpi+3qrVbmIoAv++Vrtb7ZHU53eMCgEbf88xjo/5N6UxVuuqveh0b+/LovRT6XHp3Qak+ktrRyrf2V48YhzRi9Ej5nu8qTfcTTRjJoKBHvlxk4G2LO3eZFsAlmYGAd21LZTme0uTcSwA5E0/s/UuJ49Ef4EUt8C6tFPi6/XEXuFRL8q4AqP2Sqwfr57Xm40e0XK2FM5k199XBF8OKQXVfzQsRl4DZgkyDWNAuMud24pARq5S8yWugK1D/DobhAhIIVF+oi6XcfeZzBfW/OxViEjDmSIs8g=
   file: '*/target/**/*.jar'
   file_glob: true
   on:
     tags: true
-  provider: releases
+    repo: lucidsoftware/opentracing-httpcomponents
   skip_cleanup: true
 git:
   depth: 1
