@@ -1,10 +1,13 @@
-lazy val httpcore = project
+lazy val commonSettings = Seq(
+  publishTo := sonatypePublishToBundle.value
+)
+lazy val httpcore = project.settings(commonSettings)
 
-lazy val httpclient = project.dependsOn(httpcore)
+lazy val httpclient = project.dependsOn(httpcore).settings(commonSettings)
 
-lazy val httpasyncclient = project.dependsOn(httpclient, `httpasyncclient-thread-context`)
+lazy val httpasyncclient = project.dependsOn(httpclient, `httpasyncclient-thread-context`).settings(commonSettings)
 
-lazy val `httpasyncclient-thread-context` = project
+lazy val `httpasyncclient-thread-context` = project.settings(commonSettings)
 
 inScope(Global)(Seq(
   autoScalaLibrary := false,
@@ -14,6 +17,7 @@ inScope(Global)(Seq(
     sys.env.getOrElse("SONATYPE_USERNAME", ""),
     sys.env.getOrElse("SONATYPE_PASSWORD", "")
   ),
+  usePgpKeyHex("F76A34B7F9338AC82141DD372456B4E851B8B360"),
   crossPaths := false,
   developers += Developer("pauldraper", "Paul Draper", "paulddraper@gmail.com", url("https://github.com/pauldraper")),
   homepage := Some(url("https://git.lucidchart.com/lucidsoftware/opentracing-httpcomponents")),
@@ -21,7 +25,6 @@ inScope(Global)(Seq(
   organization := "com.lucidchart",
   organizationHomepage := Some(url("http://opentracing.io/")),
   organizationName := "OpenTracing",
-  PgpKeys.pgpPassphrase := Some(Array.emptyCharArray),
   resolvers += Resolver.typesafeRepo("releases"),
   scmInfo := Some(ScmInfo(
     url("https://github.com/lucidsoftware/opentracing-httpcomponents"),
@@ -30,3 +33,6 @@ inScope(Global)(Seq(
   startYear := Some(2017),
   version := sys.props.getOrElse("build.version", "0-SNAPSHOT")
 ))
+
+skip in publish := true
+publishTo := sonatypePublishToBundle.value
