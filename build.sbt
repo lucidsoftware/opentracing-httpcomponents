@@ -17,7 +17,6 @@ inScope(Global)(Seq(
     sys.env.getOrElse("SONATYPE_USERNAME", ""),
     sys.env.getOrElse("SONATYPE_PASSWORD", "")
   ),
-  usePgpKeyHex("F76A34B7F9338AC82141DD372456B4E851B8B360"),
   crossPaths := false,
   developers += Developer("pauldraper", "Paul Draper", "paulddraper@gmail.com", url("https://github.com/pauldraper")),
   homepage := Some(url("https://git.lucidchart.com/lucidsoftware/opentracing-httpcomponents")),
