@@ -47,6 +47,7 @@ public class SpanExec implements ClientExecChain {
                 throw e;
             } finally {
                 tagger.tagContext();
+                span.finish();
             }
             tagger.tagResponse(response);
             return response;
