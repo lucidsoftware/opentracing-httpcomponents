@@ -1,6 +1,6 @@
 # OpenTracing for [HttpComponents](https://hc.apache.org/)
 
-[![Build Status](https://travis-ci.org/lucidsoftware/opentracing-httpcomponents.svg?branch=master)](https://travis-ci.org/lucidsoftware/opentracing-playframework)
+[![Build Status](https://travis-ci.com/lucidsoftware/opentracing-httpcomponents.svg?branch=master)](https://travis-ci.com/lucidsoftware/opentracing-playframework)
 ![Maven Version](https://img.shields.io/maven-central/v/com.lucidchart/opentracing-httpcore.svg)
 
 This library works with [`GlobalTracer`](https://github.com/opentracing-contrib/java-globaltracer) and
