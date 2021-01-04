@@ -1,5 +1,6 @@
 package io.opentracing.contrib.httpcomponents;
 
+import io.opentracing.noop.NoopSpan;
 import io.opentracing.Span;
 import io.opentracing.Tracer;
 import io.opentracing.propagation.Format;
@@ -29,8 +30,12 @@ public class SpanExec implements ClientExecChain {
     }
 
     public CloseableHttpResponse execute(HttpRoute route, HttpRequestWrapper request, HttpClientContext context, HttpExecutionAware execAware) throws IOException, HttpException {
+        Span parentSpan = null;
+        if (contextSpan.get() != NoopSpan.INSTANCE) {
+            parentSpan = contextSpan.get();
+        }
         Tracer.SpanBuilder spanBuilder = tracer.buildSpan(String.format("HTTP %s", request.getMethod()))
-                .asChildOf(contextSpan.get())
+                .asChildOf(parentSpan)
                 .withTag(Tags.SPAN_KIND.getKey(), Tags.SPAN_KIND_CLIENT);
                 
         Span span = spanBuilder.start();

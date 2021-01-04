@@ -1,5 +1,6 @@
 package io.opentracing.contrib.httpcomponents;
 
+import io.opentracing.noop.NoopSpan;
 import io.opentracing.References;
 import io.opentracing.Span;
 import io.opentracing.Tracer;
@@ -40,7 +41,12 @@ public class SpanHttpAsyncClient extends CloseableHttpAsyncClient {
     }
 
     public <T> Future<T> execute(HttpAsyncRequestProducer producer, HttpAsyncResponseConsumer<T> responseConsumer, HttpContext context, FutureCallback<T> callback) {
-        Span span = tracer.buildSpan("HTTP").addReference(References.CHILD_OF, contextSpan.get().context())
+        Span parentSpan = null;
+        if (contextSpan.get() != NoopSpan.INSTANCE) {
+            parentSpan = contextSpan.get();
+        }
+        Span span = tracer.buildSpan("HTTP")
+            .asChildOf(parentSpan)
             .withTag(Tags.SPAN_KIND.getKey(), Tags.SPAN_KIND_CLIENT)
             .start();
         HttpTagger tagger = taggerFactory.create(span, context);
