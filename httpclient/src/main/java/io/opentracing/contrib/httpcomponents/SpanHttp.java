@@ -8,9 +8,14 @@ public final class SpanHttp {
     }
 
     public static HttpClientBuilder trace() {
+        return SpanHttp.trace(NoOpSpanModifier.INSTANCE);
+    }
+
+    public static HttpClientBuilder trace(SpanModifier spanModifier) {
         return new SpanHttpClientBuilder()
             .addTaggerFactory(StandardHttpTagger.FACTORY)
-            .addTaggerFactory(ContentHttpTagger.FACTORY);
+            .addTaggerFactory(ContentHttpTagger.FACTORY)
+            .setSpanModifier(spanModifier);
     }
 
 }

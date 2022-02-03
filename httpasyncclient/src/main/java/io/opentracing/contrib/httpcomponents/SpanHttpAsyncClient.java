@@ -20,12 +20,18 @@ public class SpanHttpAsyncClient extends CloseableHttpAsyncClient {
     private final Tracer tracer;
     private final ContextSpan contextSpan;
     private final HttpTaggerFactory taggerFactory;
+    private final SpanModifier spanModifier;
 
     public SpanHttpAsyncClient(final CloseableHttpAsyncClient client, final Tracer tracer, final ContextSpan contextSpan, final HttpTaggerFactory taggerFactory) {
+        this(client, tracer, contextSpan, taggerFactory, NoOpSpanModifier.INSTANCE);
+    }
+
+    public SpanHttpAsyncClient(final CloseableHttpAsyncClient client, final Tracer tracer, final ContextSpan contextSpan, final HttpTaggerFactory taggerFactory, SpanModifier spanModifier) {
         this.client = client;
         this.tracer = tracer;
         this.contextSpan = contextSpan;
         this.taggerFactory = taggerFactory;
+        this.spanModifier = spanModifier;
     }
 
     public boolean isRunning() {
@@ -49,6 +55,9 @@ public class SpanHttpAsyncClient extends CloseableHttpAsyncClient {
             .asChildOf(parentSpan)
             .withTag(Tags.SPAN_KIND.getKey(), Tags.SPAN_KIND_CLIENT)
             .start();
+        if (this.spanModifier != null) {
+            this.spanModifier.modify(span);
+        }
         HttpTagger tagger = taggerFactory.create(span, context);
         return contextSpan.set(span).supply(() -> client.execute(
             new SpanHttpAsyncRequestProducer(producer, tracer, span, tagger),
