@@ -13,6 +13,7 @@ public class SpanHttpClientBuilder extends HttpClientBuilder {
     private final List<HttpTaggerFactory> taggers;
     private Tracer tracer;
     private ContextSpan contextSpan;
+    private SpanModifier spanModifier = NoOpSpanModifier.INSTANCE;
     private String name;
 
     public SpanHttpClientBuilder() {
@@ -30,6 +31,11 @@ public class SpanHttpClientBuilder extends HttpClientBuilder {
         return this;
     }
 
+    public SpanHttpClientBuilder setSpanModifier(SpanModifier spanModifier) {
+        this.spanModifier = spanModifier;
+        return this;
+    }
+
     public SpanHttpClientBuilder setTracer(Tracer tracer) {
         this.tracer = tracer;
         return this;
@@ -38,7 +44,7 @@ public class SpanHttpClientBuilder extends HttpClientBuilder {
     protected ClientExecChain decorateMainExec(ClientExecChain exec) {
         Tracer tracer = this.tracer != null ? this.tracer : GlobalTracer.get();
         ContextSpan contextSpan = this.contextSpan != null ? this.contextSpan : ContextSpan.DEFAULT;
-        return new SpanExec(exec, tracer, contextSpan, CombinedHttpTagger.factory(taggers));
+        return new SpanExec(exec, tracer, contextSpan, CombinedHttpTagger.factory(taggers), this.spanModifier);
     }
 
 }

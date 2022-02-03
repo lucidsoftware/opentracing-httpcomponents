@@ -21,12 +21,18 @@ public class SpanExec implements ClientExecChain {
     private final ContextSpan contextSpan;
     private final HttpTaggerFactory taggerFactory;
     private final Tracer tracer;
+    private final SpanModifier spanModifier;
 
     public SpanExec(ClientExecChain exec, Tracer tracer, ContextSpan contextSpan, HttpTaggerFactory taggerFactory) {
+        this(exec, tracer, contextSpan, taggerFactory,  NoOpSpanModifier.INSTANCE);
+    }
+
+    public SpanExec(ClientExecChain exec, Tracer tracer, ContextSpan contextSpan, HttpTaggerFactory taggerFactory, SpanModifier spanModifier) {
         this.exec = exec;
         this.contextSpan = contextSpan;
         this.taggerFactory = taggerFactory;
         this.tracer = tracer;
+        this.spanModifier = spanModifier;
     }
 
     public CloseableHttpResponse execute(HttpRoute route, HttpRequestWrapper request, HttpClientContext context, HttpExecutionAware execAware) throws IOException, HttpException {
@@ -39,6 +45,9 @@ public class SpanExec implements ClientExecChain {
                 .withTag(Tags.SPAN_KIND.getKey(), Tags.SPAN_KIND_CLIENT);
                 
         Span span = spanBuilder.start();
+        if (this.spanModifier != null) {
+            this.spanModifier.modify(span);
+        }
         this.tracer.inject(span.context(), Format.Builtin.HTTP_HEADERS, new HttpRequestTextMap(request));
         return contextSpan.set(span).<CloseableHttpResponse, HttpException, IOException>supplyException2(() -> {
             HttpTagger tagger = taggerFactory.create(span, context);

@@ -13,11 +13,15 @@ public final class SpanHttpAsync {
     }
 
     public static CloseableHttpAsyncClient trace(CloseableHttpAsyncClient client) {
+        return SpanHttpAsync.trace(client, NoOpSpanModifier.INSTANCE);
+    }
+
+    public static CloseableHttpAsyncClient trace(CloseableHttpAsyncClient client, SpanModifier spanModifier) {
         final HttpTaggerFactory taggerFactory = CombinedHttpTagger.factory(Arrays.asList(
             StandardHttpTagger.FACTORY,
             ContentHttpTagger.FACTORY
         ));
-        return new SpanHttpAsyncClient(new ContextAsyncClient(client, Context.DEFAULT), GlobalTracer.get(), ContextSpan.DEFAULT, taggerFactory);
+        return new SpanHttpAsyncClient(new ContextAsyncClient(client, Context.DEFAULT), GlobalTracer.get(), ContextSpan.DEFAULT, taggerFactory, spanModifier);
     }
 
 }
