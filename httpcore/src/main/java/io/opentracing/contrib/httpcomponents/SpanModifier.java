@@ -3,7 +3,7 @@ package io.opentracing.contrib.httpcomponents;
 import io.opentracing.Span;
 
 @FunctionalInterface
-interface SpanModifier {
+public interface SpanModifier {
     public void modify(Span span);
 }
 
